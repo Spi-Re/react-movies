@@ -1,15 +1,23 @@
+import { Component } from 'react';
+
 import Movie from '../movie';
 import './movieList.css';
 
-function MovieList() {
-  return (
-    <section className="movie-list">
-      <Movie />
-      <Movie />
-      <Movie />
-      <Movie />
-    </section>
-  );
-}
+export default class MovieList extends Component {
+  constructor() {
+    super();
+    this.state = {};
+  }
 
-export default MovieList;
+  render() {
+    return (
+      <section className="movie-list">
+        <Movie />
+        <Movie />
+        <Movie />
+        <Movie />
+        <Movie />
+      </section>
+    );
+  }
+}
