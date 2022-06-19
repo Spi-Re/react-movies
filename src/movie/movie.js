@@ -12,6 +12,17 @@ export default class Movie extends Component {
       desc,
       img,
     };
+    this.shortingText = (texts, limit) => {
+      let text = texts.trim();
+      if (text.length <= limit) return text;
+      text = text.slice(0, limit);
+      const lastSpace = text.lastIndexOf(' ');
+      if (lastSpace > 0) {
+        text = text.slice(0, lastSpace);
+        return `${text}...`;
+      }
+      return text;
+    };
   }
 
   render() {
@@ -32,7 +43,7 @@ export default class Movie extends Component {
             <div className="movie-class">Action</div>
             <div className="movie-class">Drama</div>
           </div>
-          <p className="movie-desc">{desc}</p>
+          <p className="movie-desc">{this.shortingText(desc, 180)}</p>
         </div>
       </div>
     );

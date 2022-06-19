@@ -16,7 +16,7 @@ export default class MovieList extends Component {
   }
 
   updateMovies() {
-    this.service.getSearchMovies('start').then((bodyAll) => {
+    this.service.getSearchMovies('return').then((bodyAll) => {
       this.setState(() => ({
         body: [...bodyAll],
       }));
