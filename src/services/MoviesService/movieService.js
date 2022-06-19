@@ -1,13 +1,17 @@
 export default class MovieService {
   async getResource(url) {
-    const responce = await fetch(url);
+    try {
+      const responce = await fetch(url);
 
-    if (!responce.ok) {
-      throw new Error(`My Error ${this.url}, ne poluchilos' vszt' dannie s servera, ${responce.status}`);
+      if (!responce.ok) {
+        throw new Error(`My Error ${this.url}, ne poluchilos' vszt' dannie s servera, ${responce.status}`);
+      }
+
+      const body = await responce.json();
+      return body;
+    } catch (err) {
+      return err;
     }
-
-    const body = await responce.json();
-    return body;
   }
 
   async getSearchMovies(name) {

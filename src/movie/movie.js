@@ -2,6 +2,8 @@ import { format } from 'date-fns';
 import './movie.css';
 import { Component } from 'react';
 
+import Zaglushka from './zaglushka.jpg';
+
 export default class Movie extends Component {
   constructor(props) {
     super(props);
@@ -30,11 +32,7 @@ export default class Movie extends Component {
     return (
       <div className="movie-card">
         <div className="poster-wrap">
-          <img
-            className="movie-poster"
-            src={img ? `https://image.tmdb.org/t/p/w500${img}` : './zaglushka.jpg'}
-            alt="Poster"
-          />
+          <img className="movie-poster" src={img ? `https://image.tmdb.org/t/p/w500${img}` : Zaglushka} alt="Poster" />
         </div>
         <div className="movie-right">
           <h2 className="movie-name">{name}</h2>
