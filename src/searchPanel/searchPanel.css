@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+.search-panel {
+  box-sizing: border-box;
+  height: 35px;
+  width: 100%;
+  padding: 9px 12px;
+
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 22px;
+
+  color: rgba(0, 0, 0, 0.25);
+}

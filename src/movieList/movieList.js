@@ -1,3 +1,5 @@
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/no-unused-state */
 import { Component } from 'react';
 import { Spin, Alert } from 'antd';
 import { Offline, Online } from 'react-detect-offline';
@@ -16,18 +18,31 @@ export default class MovieList extends Component {
       body: [],
       loading: true,
       error: false,
+      searchValue: null,
     };
+  }
+
+  componentDidMount() {
     this.updateMovies();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    // eslint-disable-next-line react/destructuring-assignment
+    if (prevState.searchValue !== this.props.putSearchValue) {
+      this.updateMovies();
+    }
   }
 
   updateMovies() {
     this.service
-      .getSearchMovies('return')
+      // eslint-disable-next-line react/destructuring-assignment
+      .getSearchMovies(this.props.putSearchValue) // результат ввода в строку поиска
       .then((bodyAll) => {
         this.setState(() => ({
           body: [...bodyAll],
           loading: false,
           error: false,
+          searchValue: this.props.putSearchValue,
         }));
       })
       .catch(() => {
