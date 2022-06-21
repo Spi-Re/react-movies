@@ -18,7 +18,7 @@ export default class MovieList extends Component {
       body: [],
       loading: true,
       error: false,
-      searchValue: null,
+      searchValue: '',
     };
   }
 
@@ -28,8 +28,17 @@ export default class MovieList extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     // eslint-disable-next-line react/destructuring-assignment
+
     if (prevState.searchValue !== this.props.putSearchValue) {
-      this.updateMovies();
+      // из-за этого промиса посылается 500 запросов на сервер. Ещё не выяснил как решить по-другому вопрос с SpinLoader во время подгрузки новых фильмов из поиска.
+      new Promise((resolve) => {
+        this.setState({
+          loading: true,
+        });
+        resolve();
+      }).then(() => {
+        this.updateMovies();
+      });
     }
   }
 
@@ -54,8 +63,10 @@ export default class MovieList extends Component {
 
   render() {
     const { body, loading, error } = this.state;
-    const setData = !(error && loading);
+    const empty = body.length === 0 && !loading;
+    const setData = !(error || loading || empty);
 
+    const emptyResult = empty ? <EmptyResult /> : null;
     const MovieComponent = setData ? <MovieFile bodyMovie={body} /> : null;
     const SpinLoader = loading ? <Spin /> : null;
     const ErrorLoader = error ? <Alert /> : null;
@@ -67,12 +78,17 @@ export default class MovieList extends Component {
             {MovieComponent}
             {SpinLoader}
             {ErrorLoader}
+            {emptyResult}
           </section>
         </Online>
         <Offline>Отсутствует интернет соединение</Offline>
       </>
     );
   }
+}
+
+function EmptyResult() {
+  return <>Поиск не дал результатов</>;
 }
 
 function MovieFile({ bodyMovie }) {

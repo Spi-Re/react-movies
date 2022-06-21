@@ -18,11 +18,15 @@ export default class SearchPanel extends Component {
         className="search-panel"
         type="text"
         placeholder="Type to search..."
-        onKeyUp={(e) => {
-          const count = debounce(() => getSearchValue(e.target.value), 1000);
+        onChange={(e) => {
+          e.stopPropagation();
+          const debounceGetSearchValue = debounce(() => {
+            // console.log(`запрос из searchPanel ${e.target.value}`);
+            getSearchValue(e.target.value);
+          }, 500);
 
-          if (e.target.value.trim() !== '') {
-            count();
+          if (e.target.value.trim() !== '' && e.target.value.length > 0) {
+            debounceGetSearchValue();
           }
         }}
       />

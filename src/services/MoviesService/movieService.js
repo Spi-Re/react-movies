@@ -14,11 +14,17 @@ export default class MovieService {
     }
   }
 
-  async getSearchMovies(name = 'harry') {
-    const res = await this.getResource(
-      `https://api.themoviedb.org/3/search/movie?api_key=c7d0196e9f7b0c30e4f5d2cc81c1d431&language=en-US&query=${name}&page=1-5&include_adult=false`
-    );
-
+  async getSearchMovies(name) {
+    let res = null;
+    if (name.length > 0) {
+      res = await this.getResource(
+        `https://api.themoviedb.org/3/search/movie?api_key=c7d0196e9f7b0c30e4f5d2cc81c1d431&language=en-US&query=${name}&page=1-5&include_adult=false`
+      );
+    } else {
+      res = await this.getResource(
+        'https://api.themoviedb.org/3/movie/popular?api_key=c7d0196e9f7b0c30e4f5d2cc81c1d431&language=en-US&page=1'
+      );
+    }
     return res.results;
   }
 }
