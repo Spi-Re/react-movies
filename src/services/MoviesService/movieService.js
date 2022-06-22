@@ -14,17 +14,23 @@ export default class MovieService {
     }
   }
 
-  async getSearchMovies(name) {
+  async getSearchMovies(name, page) {
     let res = null;
     if (name.length > 0) {
       res = await this.getResource(
-        `https://api.themoviedb.org/3/search/movie?api_key=c7d0196e9f7b0c30e4f5d2cc81c1d431&language=en-US&query=${name}&page=1-5&include_adult=false`
+        `https://api.themoviedb.org/3/search/movie?api_key=c7d0196e9f7b0c30e4f5d2cc81c1d431&language=en-US&query=${name}&page=${page}&include_adult=false`
       );
     } else {
       res = await this.getResource(
-        'https://api.themoviedb.org/3/movie/popular?api_key=c7d0196e9f7b0c30e4f5d2cc81c1d431&language=en-US&page=1'
+        `https://api.themoviedb.org/3/movie/popular?api_key=c7d0196e9f7b0c30e4f5d2cc81c1d431&language=en-US&page=${page}`
       );
+      if (res.total_pages > 500) {
+        res.total_pages = 500;
+      }
     }
-    return res.results;
+    return {
+      res: res.results,
+      totalPages: res.total_pages,
+    };
   }
 }

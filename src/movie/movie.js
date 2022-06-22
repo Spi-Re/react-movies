@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import { format } from 'date-fns';
 import './movie.css';
 import { Component } from 'react';
@@ -37,9 +36,7 @@ export default class Movie extends Component {
         </div>
         <div className="movie-right">
           <h2 className="movie-name">{name}</h2>
-          <div className="movie-date">
-            {date ? (date.length >= 5 ? format(new Date(date), 'PP') : 'Unknown') : 'Unknown'}
-          </div>
+          <div className="movie-date">{(date && date.length) >= 5 ? format(new Date(date), 'PP') : 'Unknown'}</div>
           <div className="movie-all-class">
             <div className="movie-class">Action</div>
             <div className="movie-class">Drama</div>

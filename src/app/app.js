@@ -11,6 +11,8 @@ export default class App extends Component {
     super();
     this.state = {
       searchValue: '',
+      currentPage: 1,
+      totalPages: 50,
     };
 
     this.getSearchValue = (value) => {
@@ -18,19 +20,31 @@ export default class App extends Component {
         searchValue: value,
       });
     };
+
+    this.getCurrentPage = (page) => {
+      this.setState({
+        currentPage: page,
+      });
+    };
+
+    this.getTotalPages = (totalPages) => {
+      this.setState({
+        totalPages,
+      });
+    };
   }
 
   render() {
-    const { searchValue } = this.state;
+    const { searchValue, currentPage, totalPages } = this.state;
     return (
       <main className="wrapper">
         <div className="common-container">
           <div className="search-container">
             <SearchPanel getSearchValue={this.getSearchValue} />
           </div>
-          <MovieList putSearchValue={searchValue} />
+          <MovieList putSearchValue={searchValue} putCurrentPage={currentPage} getTotalPages={this.getTotalPages} />
           <div className="pagination-container">
-            <PaginationList />
+            <PaginationList getCurrentPage={this.getCurrentPage} currentPage={currentPage} totalPages={totalPages} />
           </div>
         </div>
       </main>

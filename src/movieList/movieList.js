@@ -1,5 +1,3 @@
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable react/no-unused-state */
 import { Component } from 'react';
 import { Spin, Alert } from 'antd';
 import { Offline, Online } from 'react-detect-offline';
@@ -19,6 +17,8 @@ export default class MovieList extends Component {
       loading: true,
       error: false,
       searchValue: '',
+      currentPage: 1,
+      totalPages: 50,
     };
   }
 
@@ -27,13 +27,13 @@ export default class MovieList extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    // eslint-disable-next-line react/destructuring-assignment
-
-    if (prevState.searchValue !== this.props.putSearchValue) {
-      // из-за этого промиса посылается 500 запросов на сервер. Ещё не выяснил как решить по-другому вопрос с SpinLoader во время подгрузки новых фильмов из поиска.
+    const { putSearchValue, putCurrentPage } = this.props;
+    if (prevState.searchValue !== putSearchValue || prevState.currentPage !== putCurrentPage) {
       new Promise((resolve) => {
         this.setState({
           loading: true,
+          searchValue: putSearchValue,
+          currentPage: putCurrentPage,
         });
         resolve();
       }).then(() => {
@@ -43,16 +43,18 @@ export default class MovieList extends Component {
   }
 
   updateMovies() {
+    const { putSearchValue, putCurrentPage, getTotalPages } = this.props;
+    const { totalPages } = this.state;
     this.service
-      // eslint-disable-next-line react/destructuring-assignment
-      .getSearchMovies(this.props.putSearchValue) // результат ввода в строку поиска
+      .getSearchMovies(putSearchValue, putCurrentPage)
       .then((bodyAll) => {
         this.setState(() => ({
-          body: [...bodyAll],
+          body: [...bodyAll.res],
           loading: false,
           error: false,
-          searchValue: this.props.putSearchValue,
+          totalPages: bodyAll.totalPages,
         }));
+        getTotalPages(totalPages);
       })
       .catch(() => {
         this.setState({
