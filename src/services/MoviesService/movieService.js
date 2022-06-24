@@ -26,10 +26,10 @@ export default class MovieService {
 
   //   POST запрос на сервер на оценку фильма
   // eslint-disable-next-line class-methods-use-this
-  async postResourse(url) {
+  async postResourse(url, stars) {
     const responce = await fetch(url, {
       method: 'POST',
-      body: JSON.stringify({ value: 8 }),
+      body: JSON.stringify({ value: stars }),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -39,19 +39,23 @@ export default class MovieService {
   }
 
   //   Доп функция для POST запроса
-  async rateMovies(movieId, guestId) {
+  async rateMovies(movieId, guestId, stars) {
     const result = await this.postResourse(
-      `https://api.themoviedb.org/3/movie/${movieId}/rating?api_key=${apiKey}&guest_session_id=${guestId}`
+      `https://api.themoviedb.org/3/movie/${movieId}/rating?api_key=${apiKey}&guest_session_id=${guestId}`,
+      stars
     );
     console.log(`статус код метода по ценке фильмов ${result.status_message}`);
     return result.status_message;
   }
 
   async getRateMoviesFromServer(guestSessionId) {
-    const result = await this.getResource(
-      `https://api.themoviedb.org/3/guest_session/${guestSessionId}/rated/movies?api_key=${apiKey}&language=en-US&sort_by=created_at.asc`
-    );
-    return result.results;
+    if (guestSessionId) {
+      const result = await this.getResource(
+        `https://api.themoviedb.org/3/guest_session/${guestSessionId}/rated/movies?api_key=${apiKey}&language=en-US&sort_by=created_at.asc`
+      );
+      return result.results;
+    }
+    return null;
   }
 
   async getSearchMovies(name, page) {

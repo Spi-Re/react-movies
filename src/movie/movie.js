@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable indent */
 /* eslint-disable prettier/prettier */
 /* eslint-disable no-nested-ternary */
@@ -12,12 +14,14 @@ import Zaglushka from './zaglushka.jpg';
 export default class Movie extends Component {
   constructor(props) {
     super(props);
-    const { name, date, desc, img } = this.props;
+    const { name, date, desc, img, id, vote } = this.props;
     this.state = {
       name,
       date,
       desc,
       img,
+      id,
+      vote,
     };
     this.windowOuterWidth = window.outerWidth;
     this.shortingText = (texts, limit) => {
@@ -34,13 +38,26 @@ export default class Movie extends Component {
   }
 
   render() {
-    const { name, desc, img, date } = this.state;
+    const { name, desc, img, date, id, vote } = this.state;
+    const { getMovieIdFromDOM, putRateMoviesToServ, sessionId, ratedMovies, isMovie } = this.props;
+    const styleEllipse = {
+      border:
+        vote > 7
+          ? '2px solid #66E900'
+          : vote > 5
+          ? '2px solid #E9D100'
+          : vote > 3
+          ? '2px solid #E97E00'
+          : '2px solid #E90000',
+    };
     return (
       <div className="movie-card">
         <div className="poster-wrap">
           <img className="movie-poster" src={img ? `https://image.tmdb.org/t/p/w500${img}` : Zaglushka} alt="Poster" />
         </div>
-        <div className="number-rate">6.6</div>
+        <div className="number-rate" style={styleEllipse}>
+          {String(vote).length === 1 ? `${vote}.0` : vote}
+        </div>
         <div className="movie-right">
           <h2 className="movie-name">{this.windowOuterWidth < 500 ? this.shortingText(name, 35) : name}</h2>
           <div className="movie-date">{(date && date.length) >= 5 ? format(new Date(date), 'PP') : 'Unknown'}</div>
@@ -49,7 +66,14 @@ export default class Movie extends Component {
             <div className="movie-class">Drama</div>
           </div>
           <div className="movie-stars-rate">
-            <StarsRate />
+            <StarsRate
+              putRateMoviesToServ={putRateMoviesToServ}
+              id={id}
+              isMovie={isMovie}
+              getMovieIdFromDOM={getMovieIdFromDOM}
+              sessionId={sessionId}
+              ratedMovies={ratedMovies}
+            />
           </div>
           <p className="movie-desc">
             {this.windowOuterWidth < 720
