@@ -6,3 +6,8 @@
   flex-wrap: wrap;
   gap: 30px;
 }
+@media (max-width: 500px) {
+  .movie-list {
+    padding: 10px 10px;
+  }
+}

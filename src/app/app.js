@@ -1,7 +1,8 @@
 import { Component } from 'react';
+
 import './normalize.css';
 import './app.css';
-
+import TabsMenu from '../TabsMenu';
 import MovieList from '../movieList';
 import SearchPanel from '../searchPanel';
 import PaginationList from '../paginationList';
@@ -39,6 +40,9 @@ export default class App extends Component {
     return (
       <main className="wrapper">
         <div className="common-container">
+          <div>
+            <TabsMenu />
+          </div>
           <div className="search-container">
             <SearchPanel getSearchValue={this.getSearchValue} />
           </div>

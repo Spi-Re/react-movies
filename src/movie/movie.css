@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
 
 .movie-card {
+  position: relative;
   width: 454px;
   height: 281px;
   display: flex;
@@ -8,14 +9,32 @@
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+@media (max-width: 500px) {
+  .movie-card {
+    height: 218px;
+  }
+}
+
 .poster-wrap {
+}
+@media (max-width: 500px) {
+  .poster-wrap {
+    margin: 6px 0 0 10px;
+  }
 }
 
 .movie-poster {
   max-height: 100%;
+  max-width: 187px;
+}
+@media (max-width: 500px) {
+  .movie-poster {
+    max-height: 100px;
+  }
 }
 
 .movie-right {
+  position: relative;
   margin: 10px 20px;
   display: flex;
   flex-direction: column;
@@ -23,15 +42,65 @@
   overflow: hidden;
 }
 
+@media (max-width: 500px) {
+  .movie-right {
+    position: static;
+    margin: 2px 12px;
+    gap: 3px;
+  }
+}
+
+.number-rate {
+  position: absolute;
+
+  right: 12px;
+  top: 15px;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 22px;
+
+  display: flex;
+  align-items: center;
+
+  color: #000000;
+}
+
+@media (max-width: 500px) {
+  .number-rate {
+    top: 8px;
+    right: 10px;
+  }
+}
+
+.number-rate:before {
+  box-sizing: border-box;
+  content: '';
+  position: absolute;
+  width: 31px;
+  height: 30px;
+  right: -6px;
+  top: -4px;
+  border-radius: 50%;
+  border: 2px solid #e9d100;
+}
+
 .movie-name {
   margin: 0;
-  padding: 0;
+  padding: 0 16px 0 0;
   font-family: 'Inter';
   font-style: normal;
   font-weight: 400;
   font-size: 20px;
   line-height: 28px;
   align-items: center;
+}
+
+@media (max-width: 500px) {
+  .movie-name {
+    padding-right: 23px;
+  }
 }
 
 .movie-date {
@@ -61,10 +130,25 @@
 }
 
 .movie-desc {
+  margin-bottom: 0;
   font-family: 'Inter';
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
   line-height: 22px;
   text-overflow: ellipsis;
+  color: #000000;
+}
+
+@media (max-width: 500px) {
+  .movie-desc {
+    position: absolute;
+    top: 112px;
+    left: 10px;
+    padding-right: 7px;
+  }
+}
+
+.movie-stars-rate {
+  max-width: 100%;
 }

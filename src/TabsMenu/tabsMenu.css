@@ -1,0 +1,28 @@
+.ant-tabs-tab + .ant-tabs-tab {
+  margin: 0 0 0 16px;
+}
+
+.ant-tabs-top > .ant-tabs-nav::before {
+  content: '';
+  position: absolute;
+  width: 146px;
+  margin: 0 auto;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #1890ff;
+  text-shadow: 0 0 0.25px currentcolor;
+  text-align: center;
+}
+
+.ant-tabs-tab-btn {
+  width: 64px;
+  text-align: center;
+  margin-top: 20px;
+}
+@media (max-width: 500px) {
+  .ant-tabs-tab-btn {
+    margin-top: 5px;
+  }
+}
