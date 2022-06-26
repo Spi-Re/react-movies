@@ -32,8 +32,8 @@ export default class App extends Component {
       currentPage: 1,
       totalPages: 50,
       sessionId: false,
-      stars: false,
       isMovie: false,
+      hasRaited: false,
     };
 
     this.id = null;
@@ -57,12 +57,21 @@ export default class App extends Component {
     };
 
     this.componentDidMount = () => {
-      this.SignInGuestSession();
+      // this.SignInGuestSession();
+      this.ratedMovies();
+
+      JSON.parse(localStorage.getItem('guestId')) && JSON.parse(localStorage.getItem('guestId')).length > 0
+        ? this.setState({
+            sessionId: JSON.parse(localStorage.getItem('guestId')),
+          })
+        : this.setState({
+            sessionId: false,
+          });
     };
 
-    // Создание сессии
+    // Создание новой сессии
     this.SignInGuestSession = () => {
-      //   localStorage.clear();
+      this.clearGuestSession();
       getGuestSession.getGuestSession().then((id) => {
         console.log(id);
         this.setState({
@@ -81,23 +90,41 @@ export default class App extends Component {
 
     // Оценить
     this.putRateMoviesToServ = (stars) => {
-      getGuestSession
-        .rateMovies(this.id, JSON.parse(localStorage.getItem('guestId')), stars)
-        .then((movie) => {
-          console.log(JSON.parse(localStorage.getItem('guestId')));
-          console.log(`getRate${movie}`);
-          this.setState({
-            stars: true,
-          });
-        }, 2)
-        .then(() => this.ratedMovies());
+      if (JSON.parse(localStorage.getItem('guestId'))) {
+        getGuestSession
+          .rateMovies(this.id, JSON.parse(localStorage.getItem('guestId')), stars)
+          .then((movie) => {
+            console.log(JSON.parse(localStorage.getItem('guestId')));
+            console.log(`getRate${movie}`);
+          }, 2)
+          .then(() => this.ratedMovies());
+      }
     };
+
+    // ================================== Фукнции для второго таба
+
+    this.putRateMoviesToTabTwo = async (stars, id) => {
+      await getGuestSession.rateMovies(this.id, JSON.parse(localStorage.getItem('guestId')), stars);
+      const result = await getGuestSession.getRateMoviesFromServer(JSON.parse(localStorage.getItem('guestId')));
+
+      let movie = result.filter((elem) => elem.id === id);
+      console.log(movie);
+      let value = movie[0].rating || 0;
+      this.setState({
+        hasRaited: true,
+      });
+      return value;
+    };
+
+    // ======================================
 
     // Забрать фильмы сессии
     this.ratedMovies = () => {
-      if (this.state.stars) {
+      if (localStorage.getItem('guestId')) {
         getGuestSession.getRateMoviesFromServer(JSON.parse(localStorage.getItem('guestId'))).then((movies) => {
           console.log(movies);
+
+          // установить фильмы с сервера в локал сторедж
           localStorage.setItem('movies', JSON.stringify(movies));
 
           JSON.parse(localStorage.getItem('guestId')).length > 0
@@ -107,10 +134,6 @@ export default class App extends Component {
             : this.setState({
                 isMovie: false,
               });
-
-          this.setState({
-            stars: false,
-          });
         });
       }
     };
@@ -123,7 +146,7 @@ export default class App extends Component {
   }
 
   render() {
-    const { searchValue, currentPage, totalPages, sessionId, isMovie } = this.state;
+    const { searchValue, currentPage, totalPages, sessionId, isMovie, hasRaited } = this.state;
     return (
       <main className="wrapper">
         <div className="common-container">
@@ -132,16 +155,17 @@ export default class App extends Component {
               <TabPane tab="Search" key="1">
                 <div className="search-container">
                   <SearchPanel getSearchValue={this.getSearchValue} />
-                  <button type="button" onClick={this.clearGuestSession}>
+                  {/* <button type="button" onClick={this.clearGuestSession}>
                     Закончить сессию
+                  </button> */}
+
+                  <button type="button" onClick={this.SignInGuestSession}>
+                    Начать новую сессию
                   </button>
-                  {/* 
-                  <button type="button" onClick={this.ratedMovies}>
-                    Получить оценённые фильмы
-                  </button>
-                  <button type="button">Оценить фильм</button> */}
+                  {/* <button type="button">Оценить фильм</button> */}
                 </div>
                 <MovieList
+                  putRateMoviesToTabTwo={this.putRateMoviesToTabTwo}
                   ratedMovies={this.ratedMovies}
                   sessionId={sessionId}
                   putRateMoviesToServ={this.putRateMoviesToServ}
@@ -163,7 +187,13 @@ export default class App extends Component {
                   <div className="wrapper">
                     <div className="common-container">
                       <div className="movie-list">
-                        <MovieFile isMovie={isMovie} bodyMovie={JSON.parse(localStorage.getItem('movies'))} />
+                        <MovieFile
+                          sessionId={sessionId}
+                          isMovie={isMovie}
+                          hasRaited={hasRaited}
+                          bodyMovie={JSON.parse(localStorage.getItem('movies'))}
+                          putRateMoviesToTabTwo={this.putRateMoviesToTabTwo}
+                        />
                       </div>
                     </div>
                   </div>
@@ -185,11 +215,14 @@ export default class App extends Component {
   }
 }
 
-function MovieFile({ bodyMovie, isMovie }) {
+function MovieFile({ bodyMovie, isMovie, putRateMoviesToTabTwo, hasRaited, sessionId }) {
   return (
     <>
       {bodyMovie.map((elem) => (
         <Movie
+          sessionId={sessionId}
+          hasRaited={hasRaited}
+          putRateMoviesToTabTwo={putRateMoviesToTabTwo}
           vote={elem.vote_average}
           isMovie={isMovie}
           key={elem.id}

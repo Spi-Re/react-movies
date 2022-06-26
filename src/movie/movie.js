@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable indent */
@@ -8,8 +9,12 @@ import { format } from 'date-fns';
 import './movie.css';
 import { Component } from 'react';
 
+import MovieService from '../services/MoviesService';
+
 import StarsRate from './StarsRate';
 import Zaglushka from './zaglushka.jpg';
+
+const getStarsOfMovie = new MovieService();
 
 export default class Movie extends Component {
   constructor(props) {
@@ -22,6 +27,7 @@ export default class Movie extends Component {
       img,
       id,
       vote,
+      rating: null,
     };
     this.windowOuterWidth = window.outerWidth;
     this.shortingText = (texts, limit) => {
@@ -35,11 +41,37 @@ export default class Movie extends Component {
       }
       return text;
     };
+
+    this.updateStars = async () => {
+      if (localStorage.getItem('guestId')) {
+        let stars = null;
+
+        const arrOfMovies = await getStarsOfMovie.getRateMoviesFromServer(JSON.parse(localStorage.getItem('guestId')));
+        const targetMovie = arrOfMovies.filter((elem) => elem.id === id);
+        stars = targetMovie.length > 0 ? targetMovie[0].rating : 0;
+        this.setState({
+          rating: stars,
+        });
+      }
+    };
+  }
+
+  // получает рейтинг фильма после перезагрузки страницы
+  componentDidMount() {
+    this.updateStars();
   }
 
   render() {
-    const { name, desc, img, date, id, vote } = this.state;
-    const { getMovieIdFromDOM, putRateMoviesToServ, sessionId, ratedMovies, isMovie } = this.props;
+    const { name, desc, img, date, id, vote, rating } = this.state;
+    const {
+      getMovieIdFromDOM,
+      putRateMoviesToServ,
+      sessionId,
+      ratedMovies,
+      isMovie,
+      putRateMoviesToTabTwo,
+      hasRaited,
+    } = this.props;
     const styleEllipse = {
       border:
         vote > 7
@@ -67,6 +99,10 @@ export default class Movie extends Component {
           </div>
           <div className="movie-stars-rate">
             <StarsRate
+              updateStars={this.updateStars}
+              rating={rating}
+              hasRaited={hasRaited}
+              putRateMoviesToTabTwo={putRateMoviesToTabTwo}
               putRateMoviesToServ={putRateMoviesToServ}
               id={id}
               isMovie={isMovie}

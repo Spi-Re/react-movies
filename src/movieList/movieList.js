@@ -64,7 +64,7 @@ export default class MovieList extends Component {
   }
 
   render() {
-    const { getMovieIdFromDOM, putRateMoviesToServ, sessionId, ratedMovies } = this.props;
+    const { getMovieIdFromDOM, putRateMoviesToServ, sessionId, ratedMovies, putRateMoviesToTabTwo } = this.props;
     const { body, loading, error } = this.state;
     const empty = body.length === 0 && !loading;
     const setData = !(error || loading || empty);
@@ -77,6 +77,7 @@ export default class MovieList extends Component {
         sessionId={sessionId}
         getMovieIdFromDOM={getMovieIdFromDOM}
         putRateMoviesToServ={putRateMoviesToServ}
+        putRateMoviesToTabTwo={putRateMoviesToTabTwo}
       />
     ) : null;
     const SpinLoader = loading ? <Spin /> : null;
@@ -102,11 +103,20 @@ function EmptyResult() {
   return <>Поиск не дал результатов</>;
 }
 
-function MovieFile({ bodyMovie, getMovieIdFromDOM, putRateMoviesToServ, ratedMovies }) {
+function MovieFile({
+  bodyMovie,
+  getMovieIdFromDOM,
+  putRateMoviesToServ,
+  ratedMovies,
+  putRateMoviesToTabTwo,
+  sessionId,
+}) {
   return (
     <>
       {bodyMovie.map((elem) => (
         <Movie
+          sessionId={sessionId}
+          putRateMoviesToTabTwo={putRateMoviesToTabTwo}
           vote={elem.vote_average}
           ratedMovies={ratedMovies}
           putRateMoviesToServ={putRateMoviesToServ}

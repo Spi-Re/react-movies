@@ -48,6 +48,7 @@ export default class MovieService {
     return result.status_message;
   }
 
+  //   Получить рейтинг фильма
   async getRateMoviesFromServer(guestSessionId) {
     if (guestSessionId) {
       const result = await this.getResource(

@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 /* eslint-disable react/destructuring-assignment */
 import { Component } from 'react';
 import { Rate } from 'antd';
@@ -14,21 +15,21 @@ export default class StarsRate extends Component {
   }
 
   render() {
-    const { putRateMoviesToServ, id, getMovieIdFromDOM, ratedMovies } = this.props;
+    const { putRateMoviesToServ, id, getMovieIdFromDOM, rating, updateStars } = this.props;
     const { newValue } = this.state;
     return (
       <Rate
         allowHalf
         count="10"
         defaultValue={0}
-        value={newValue}
+        value={rating || newValue}
         className="rate"
-        onChange={(value) => {
+        onChange={async (value) => {
+          await putRateMoviesToServ(value);
           this.setState({
             newValue: value,
           });
-          putRateMoviesToServ(value);
-          ratedMovies();
+          updateStars();
         }}
         onFocus={() => getMovieIdFromDOM(id)}
       />
