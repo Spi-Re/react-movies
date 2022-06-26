@@ -135,10 +135,11 @@ export default class App extends Component {
                   <button type="button" onClick={this.clearGuestSession}>
                     Закончить сессию
                   </button>
+                  {/* 
                   <button type="button" onClick={this.ratedMovies}>
                     Получить оценённые фильмы
                   </button>
-                  <button type="button">Оценить фильм</button>
+                  <button type="button">Оценить фильм</button> */}
                 </div>
                 <MovieList
                   ratedMovies={this.ratedMovies}
@@ -189,12 +190,14 @@ function MovieFile({ bodyMovie, isMovie }) {
     <>
       {bodyMovie.map((elem) => (
         <Movie
+          vote={elem.vote_average}
           isMovie={isMovie}
           key={elem.id}
           name={elem.original_title}
           date={elem.release_date}
           desc={elem.overview}
           img={elem.poster_path}
+          id={elem.id}
         />
       ))}
     </>

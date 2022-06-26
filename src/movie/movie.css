@@ -56,8 +56,8 @@
 
 .number-rate {
   position: absolute;
-  right: 12px;
-  top: 15px;
+  right: 9px;
+  top: 9px;
   font-family: 'Inter';
   font-style: normal;
   font-weight: 400;
@@ -80,18 +80,6 @@
     right: 10px;
   }
 }
-/* 
-.number-rate:before {
-  box-sizing: border-box;
-  content: '';
-  position: absolute;
-  width: 31px;
-  height: 30px;
-  right: -6px;
-  top: -4px;
-  border-radius: 50%;
-  border: 2px solid #e9d100;
-} */
 
 .movie-name {
   margin: 0;

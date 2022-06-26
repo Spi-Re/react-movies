@@ -102,14 +102,13 @@ function EmptyResult() {
   return <>Поиск не дал результатов</>;
 }
 
-function MovieFile({ bodyMovie, getMovieIdFromDOM, putRateMoviesToServ, sessionId, ratedMovies }) {
+function MovieFile({ bodyMovie, getMovieIdFromDOM, putRateMoviesToServ, ratedMovies }) {
   return (
     <>
       {bodyMovie.map((elem) => (
         <Movie
           vote={elem.vote_average}
           ratedMovies={ratedMovies}
-          sessionId={sessionId}
           putRateMoviesToServ={putRateMoviesToServ}
           getMovieIdFromDOM={getMovieIdFromDOM}
           key={elem.id}
