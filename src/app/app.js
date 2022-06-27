@@ -1,4 +1,3 @@
-/* eslint-disable react/destructuring-assignment */
 import { Component } from 'react';
 import './normalize.css';
 import './app.css';
