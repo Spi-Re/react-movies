@@ -1,6 +1,8 @@
 import { Component } from 'react';
 import './genre.css';
 
+import GenresContext from '../../genresContext';
+
 export default class Genre extends Component {
   constructor() {
     super();
@@ -11,20 +13,29 @@ export default class Genre extends Component {
     this.componentDidMount = () => {
       this.jenresToString();
     };
-
-    this.jenresToString = () => {
-      const { genreMovieId, arrOfGenresFromServer } = this.props;
-      const stringNameOfGenre = arrOfGenresFromServer.filter((elem) => elem.id === genreMovieId);
-      const nameOfGenre = stringNameOfGenre[0].name;
-      this.setState({
-        name: nameOfGenre,
-      });
-      //   return stringNameOfJenre.name;
-    };
   }
 
   render() {
     const { name } = this.state;
-    return <div className="movie-class">{name}</div>;
+    const { genreMovieId } = this.props;
+    return (
+      <GenresContext.Consumer>
+        {(arrOfGenres) => {
+          this.jenresToString = () => {
+            arrOfGenres
+              .then((ids) => {
+                const target = ids.genres.filter((elem) => elem.id === genreMovieId);
+                return target;
+              })
+              .then((target) => {
+                this.setState({
+                  name: target[0].name,
+                });
+              });
+          };
+          return <div className="movie-class">{name}</div>;
+        }}
+      </GenresContext.Consumer>
+    );
   }
 }
