@@ -77,19 +77,11 @@ export default class App extends Component {
     };
 
     this.SignInGuestSession = () => {
-      this.clearGuestSession();
       getGuestSession.getGuestSession().then((id) => {
         this.setState({
           sessionId: id,
         });
         localStorage.setItem('guestId', JSON.stringify(id));
-      });
-    };
-
-    this.clearGuestSession = () => {
-      localStorage.clear();
-      this.setState({
-        sessionId: null,
       });
     };
 
@@ -123,10 +115,6 @@ export default class App extends Component {
               <TabPane tab="Search" key="1">
                 <div className="search-container">
                   <SearchPanel getSearchValue={this.getSearchValue} />
-
-                  <button type="button" onClick={this.SignInGuestSession}>
-                    Начать новую сессию
-                  </button>
                 </div>
                 <MovieList
                   getRatedMoviesFromServer={this.getRatedMoviesFromServer}
