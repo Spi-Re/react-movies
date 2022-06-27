@@ -1,13 +1,11 @@
-/* eslint-disable no-return-assign */
-/* eslint-disable no-param-reassign */
-import { PureComponent } from 'react';
+import { Component } from 'react';
 
 import Movie from '../movie';
 import MovieService from '../services/MoviesService';
 
 const movieService = new MovieService();
 
-export default class MovieFile extends PureComponent {
+export default class MovieFile extends Component {
   constructor(props) {
     super(props);
     const { ratedMovies } = this.props;
@@ -21,7 +19,7 @@ export default class MovieFile extends PureComponent {
 
     this.componentDidUpdate = (prevProps, prevState) => {
       const { movies } = this.state;
-      if (prevState.movies !== movies) {
+      if (prevState.movies === movies) {
         this.getRatedMoviesFromServer();
       }
     };

@@ -81,6 +81,7 @@ export default class MovieList extends Component {
     const { arrOfGenresFromServer } = this.state;
 
     const { body, loading, error } = this.state;
+
     const empty = body.length === 0 && !loading;
     const setData = !(error || loading || empty);
 

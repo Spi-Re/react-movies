@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import { format } from 'date-fns';
 import './movie.css';
 import { Component } from 'react';
@@ -50,9 +51,15 @@ export default class Movie extends Component {
     };
   }
 
-  // получает рейтинг фильма после перезагрузки страницы
   componentDidMount() {
     this.updateStars();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { rating } = this.state;
+    if (prevState.rating !== rating) {
+      this.updateStars();
+    }
   }
 
   render() {

@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import { Component } from 'react';
 import './normalize.css';
 import './app.css';
@@ -7,9 +8,7 @@ import MovieList from '../movieList';
 import SearchPanel from '../searchPanel';
 import PaginationList from '../paginationList';
 import MovieService from '../services/MoviesService';
-// import Movie from '../movie';
 import MovieFile from '../MovieFile';
-
 import 'antd/dist/antd.css';
 import '../TabsMenu/tabsMenu.css';
 import '../movieList/movieList.css';
@@ -62,15 +61,13 @@ export default class App extends Component {
       if (localStorage.getItem('guestId')) {
         getGuestSession.getRateMoviesFromServer(JSON.parse(localStorage.getItem('guestId'))).then((movies) => {
           this.setState(() => ({
-            ratedMovies: [...movies],
+            ratedMovies: movies,
             isMovie: true,
           }));
         });
       }
     };
 
-    // чисто для второго таба, потому что эта же функция дублируется в компоненте movieList
-    // и эту же проблему нужно решить для работы с react.context
     this.getArrOfJenresFromServer = () => {
       getGuestSession.getJenres().then((elem) => {
         this.setState({
@@ -79,7 +76,6 @@ export default class App extends Component {
       });
     };
 
-    // Создание новой сессии
     this.SignInGuestSession = () => {
       this.clearGuestSession();
       getGuestSession.getGuestSession().then((id) => {
@@ -118,6 +114,7 @@ export default class App extends Component {
 
   render() {
     const { searchValue, currentPage, totalPages, sessionId, isMovie, arrOfGenresFromServer, ratedMovies } = this.state;
+
     return (
       <main className="wrapper">
         <div className="common-container">
@@ -132,7 +129,6 @@ export default class App extends Component {
                   </button>
                 </div>
                 <MovieList
-                  arrOfGenresFromServer={arrOfGenresFromServer}
                   getRatedMoviesFromServer={this.getRatedMoviesFromServer}
                   putRateMoviesToServ={this.putRateMoviesToServ}
                   putSearchValue={searchValue}
@@ -174,23 +170,3 @@ export default class App extends Component {
     );
   }
 }
-
-// function MovieFile({ bodyMovie, arrOfGenresFromServer }) {
-//   return (
-//     <>
-//       {bodyMovie.map((elem) => (
-//         <Movie
-//           arrOfGenresFromServer={arrOfGenresFromServer}
-//           genresMovieId={elem.genre_ids}
-//           vote={elem.vote_average}
-//           id={elem.id}
-//           name={elem.original_title}
-//           date={elem.release_date}
-//           desc={elem.overview}
-//           img={elem.poster_path}
-//           key={elem.id}
-//         />
-//       ))}
-//     </>
-//   );
-// }

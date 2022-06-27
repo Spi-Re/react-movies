@@ -1,3 +1,3 @@
-import { GenreProvider, GenreConsumer } from './genresContext';
+import GenresContext from './genresContext';
 
-export { GenreProvider, GenreConsumer };
+export default GenresContext;
