@@ -57,7 +57,7 @@ export default class Movie extends Component {
 
   render() {
     const { name, desc, img, date, id, vote, rating } = this.state;
-    const { getMovieIdFromDOM, putRateMoviesToServ, ratedMovies, genresMovieId, arrOfGenresFromServer } = this.props;
+    const { getMovieIdFromDOM, putRateMoviesToServ, genresMovieId, arrOfGenresFromServer } = this.props;
 
     const shortingTextSize = () => {
       if (this.windowOuterWidth < 350) {
@@ -112,7 +112,6 @@ export default class Movie extends Component {
               putRateMoviesToServ={putRateMoviesToServ}
               id={id}
               getMovieIdFromDOM={getMovieIdFromDOM}
-              ratedMovies={ratedMovies}
             />
           </div>
           <p className="movie-desc">{shortingTextSize()}</p>

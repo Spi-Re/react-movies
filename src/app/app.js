@@ -7,7 +7,8 @@ import MovieList from '../movieList';
 import SearchPanel from '../searchPanel';
 import PaginationList from '../paginationList';
 import MovieService from '../services/MoviesService';
-import Movie from '../movie';
+// import Movie from '../movie';
+import MovieFile from '../MovieFile';
 
 import 'antd/dist/antd.css';
 import '../TabsMenu/tabsMenu.css';
@@ -27,9 +28,10 @@ export default class App extends Component {
       sessionId: false,
       isMovie: false,
       arrOfGenresFromServer: null,
+      ratedMovies: null,
     };
 
-    this.id = null;
+    this.focusMovieId = null;
 
     this.getSearchValue = (value) => {
       this.setState({
@@ -49,23 +51,32 @@ export default class App extends Component {
       });
     };
 
+    // забрать id фильма из элемента на котором был фокус при оценке
+    this.getMovieIdFromDOM = (id) => {
+      this.focusMovieId = id;
+      return this.focusMovieId;
+    };
+
+    // Забрать фильмы сессии
+    this.getRatedMoviesFromServer = () => {
+      if (localStorage.getItem('guestId')) {
+        getGuestSession.getRateMoviesFromServer(JSON.parse(localStorage.getItem('guestId'))).then((movies) => {
+          this.setState(() => ({
+            ratedMovies: [...movies],
+            isMovie: true,
+          }));
+        });
+      }
+    };
+
     // чисто для второго таба, потому что эта же функция дублируется в компоненте movieList
-    this.downloadArrOfJenresFromServer = () => {
+    // и эту же проблему нужно решить для работы с react.context
+    this.getArrOfJenresFromServer = () => {
       getGuestSession.getJenres().then((elem) => {
         this.setState({
           arrOfGenresFromServer: elem.genres,
         });
       });
-    };
-
-    this.componentDidMount = () => {
-      // this.downloadArrOfJenresFromServer();
-      if (localStorage.getItem('guestId') === null) {
-        this.SignInGuestSession();
-      }
-      this.setState({ sessionId: JSON.parse(localStorage.getItem('guestId')) });
-      this.downloadArrOfJenresFromServer();
-      this.ratedMovies();
     };
 
     // Создание новой сессии
@@ -86,35 +97,27 @@ export default class App extends Component {
       });
     };
 
+    this.componentDidMount = () => {
+      if (localStorage.getItem('guestId') === null) {
+        this.SignInGuestSession();
+      }
+      this.setState({ sessionId: JSON.parse(localStorage.getItem('guestId')) });
+      this.getArrOfJenresFromServer();
+      this.getRatedMoviesFromServer();
+    };
+
     // Оценить
     this.putRateMoviesToServ = (stars) => {
       if (JSON.parse(localStorage.getItem('guestId'))) {
         getGuestSession
-          .rateMovies(this.id, JSON.parse(localStorage.getItem('guestId')), stars)
-          .then(() => this.ratedMovies());
+          .rateMovies(this.focusMovieId, JSON.parse(localStorage.getItem('guestId')), stars)
+          .then(() => this.getRatedMoviesFromServer());
       }
-    };
-
-    // Забрать фильмы сессии
-    this.ratedMovies = () => {
-      if (localStorage.getItem('guestId')) {
-        getGuestSession.getRateMoviesFromServer(JSON.parse(localStorage.getItem('guestId'))).then((movies) => {
-          // установить фильмы с сервера в локал сторедж
-          localStorage.setItem('movies', JSON.stringify(movies));
-          this.setState({ isMovie: true });
-        });
-      }
-    };
-
-    // забрать id фильма из элемента на котором был фокус при оценке
-    this.getMovieIdFromDOM = (id) => {
-      this.id = id;
-      return this.id;
     };
   }
 
   render() {
-    const { searchValue, currentPage, totalPages, sessionId, isMovie, arrOfGenresFromServer } = this.state;
+    const { searchValue, currentPage, totalPages, sessionId, isMovie, arrOfGenresFromServer, ratedMovies } = this.state;
     return (
       <main className="wrapper">
         <div className="common-container">
@@ -130,7 +133,7 @@ export default class App extends Component {
                 </div>
                 <MovieList
                   arrOfGenresFromServer={arrOfGenresFromServer}
-                  ratedMovies={this.ratedMovies}
+                  getRatedMoviesFromServer={this.getRatedMoviesFromServer}
                   putRateMoviesToServ={this.putRateMoviesToServ}
                   putSearchValue={searchValue}
                   putCurrentPage={currentPage}
@@ -150,10 +153,7 @@ export default class App extends Component {
                   <div className="wrapper">
                     <div className="common-container">
                       <div className="movie-list">
-                        <MovieFile
-                          arrOfGenresFromServer={arrOfGenresFromServer}
-                          bodyMovie={JSON.parse(localStorage.getItem('movies'))}
-                        />
+                        <MovieFile arrOfGenresFromServer={arrOfGenresFromServer} ratedMovies={ratedMovies} />
                       </div>
                     </div>
                   </div>
@@ -175,22 +175,22 @@ export default class App extends Component {
   }
 }
 
-function MovieFile({ bodyMovie, arrOfGenresFromServer }) {
-  return (
-    <>
-      {bodyMovie.map((elem) => (
-        <Movie
-          arrOfGenresFromServer={arrOfGenresFromServer}
-          genresMovieId={elem.genre_ids}
-          vote={elem.vote_average}
-          id={elem.id}
-          name={elem.original_title}
-          date={elem.release_date}
-          desc={elem.overview}
-          img={elem.poster_path}
-          key={elem.id}
-        />
-      ))}
-    </>
-  );
-}
+// function MovieFile({ bodyMovie, arrOfGenresFromServer }) {
+//   return (
+//     <>
+//       {bodyMovie.map((elem) => (
+//         <Movie
+//           arrOfGenresFromServer={arrOfGenresFromServer}
+//           genresMovieId={elem.genre_ids}
+//           vote={elem.vote_average}
+//           id={elem.id}
+//           name={elem.original_title}
+//           date={elem.release_date}
+//           desc={elem.overview}
+//           img={elem.poster_path}
+//           key={elem.id}
+//         />
+//       ))}
+//     </>
+//   );
+// }

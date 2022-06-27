@@ -24,7 +24,7 @@ export default class MovieList extends Component {
     };
 
     // загрузка жанров
-    this.downloadArrOfJenresFromServer = () => {
+    this.getArrOfJenresFromServer = () => {
       this.service.getJenres().then((elem) => {
         this.setState({
           arrOfGenresFromServer: elem.genres,
@@ -34,7 +34,7 @@ export default class MovieList extends Component {
   }
 
   componentDidMount() {
-    this.downloadArrOfJenresFromServer();
+    this.getArrOfJenresFromServer();
     this.updateMovies();
   }
 
@@ -76,7 +76,7 @@ export default class MovieList extends Component {
   }
 
   render() {
-    const { getMovieIdFromDOM, putRateMoviesToServ, ratedMovies } = this.props;
+    const { getMovieIdFromDOM, putRateMoviesToServ, getRatedMoviesFromServer } = this.props;
 
     const { arrOfGenresFromServer } = this.state;
 
@@ -88,7 +88,7 @@ export default class MovieList extends Component {
     const MovieComponent = setData ? (
       <MovieFile
         arrOfGenresFromServer={arrOfGenresFromServer}
-        ratedMovies={ratedMovies}
+        getRatedMoviesFromServer={getRatedMoviesFromServer}
         bodyMovie={body}
         getMovieIdFromDOM={getMovieIdFromDOM}
         putRateMoviesToServ={putRateMoviesToServ}
@@ -117,13 +117,19 @@ function EmptyResult() {
   return <>Поиск не дал результатов</>;
 }
 
-function MovieFile({ bodyMovie, getMovieIdFromDOM, putRateMoviesToServ, ratedMovies, arrOfGenresFromServer }) {
+function MovieFile({
+  bodyMovie,
+  getMovieIdFromDOM,
+  putRateMoviesToServ,
+  getRatedMoviesFromServer,
+  arrOfGenresFromServer,
+}) {
   return (
     <>
       {bodyMovie.map((elem) => (
         <Movie
           arrOfGenresFromServer={arrOfGenresFromServer}
-          ratedMovies={ratedMovies}
+          getRatedMoviesFromServer={getRatedMoviesFromServer}
           putRateMoviesToServ={putRateMoviesToServ}
           getMovieIdFromDOM={getMovieIdFromDOM}
           vote={elem.vote_average}

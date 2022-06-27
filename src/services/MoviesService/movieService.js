@@ -44,7 +44,6 @@ export default class MovieService {
       `https://api.themoviedb.org/3/movie/${movieId}/rating?api_key=${apiKey}&guest_session_id=${guestId}`,
       stars
     );
-    console.log(`статус код метода по ценке фильмов ${result.status_message}`);
     return result.status_message;
   }
 
