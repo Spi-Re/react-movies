@@ -1,5 +1,3 @@
-/* eslint-disable class-methods-use-this */
-/* eslint-disable react/destructuring-assignment */
 import { Component } from 'react';
 import { Rate } from 'antd';
 

@@ -1,14 +1,7 @@
-/* eslint-disable indent */
-/* eslint-disable no-unused-expressions */
-/* eslint-disable prettier/prettier */
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable prefer-const */
-/* eslint-disable no-unused-vars */
 import { Component } from 'react';
 import './normalize.css';
 import './app.css';
 import { Tabs } from 'antd';
-import { parse } from 'date-fns';
 
 import MovieList from '../movieList';
 import SearchPanel from '../searchPanel';
@@ -33,7 +26,7 @@ export default class App extends Component {
       totalPages: 50,
       sessionId: false,
       isMovie: false,
-      hasRaited: false,
+      arrOfGenresFromServer: null,
     };
 
     this.id = null;
@@ -56,24 +49,29 @@ export default class App extends Component {
       });
     };
 
-    this.componentDidMount = () => {
-      // this.SignInGuestSession();
-      this.ratedMovies();
+    // чисто для второго таба, потому что эта же функция дублируется в компоненте movieList
+    this.downloadArrOfJenresFromServer = () => {
+      getGuestSession.getJenres().then((elem) => {
+        this.setState({
+          arrOfGenresFromServer: elem.genres,
+        });
+      });
+    };
 
-      JSON.parse(localStorage.getItem('guestId')) && JSON.parse(localStorage.getItem('guestId')).length > 0
-        ? this.setState({
-            sessionId: JSON.parse(localStorage.getItem('guestId')),
-          })
-        : this.setState({
-            sessionId: false,
-          });
+    this.componentDidMount = () => {
+      // this.downloadArrOfJenresFromServer();
+      if (localStorage.getItem('guestId') === null) {
+        this.SignInGuestSession();
+      }
+      this.setState({ sessionId: JSON.parse(localStorage.getItem('guestId')) });
+      this.downloadArrOfJenresFromServer();
+      this.ratedMovies();
     };
 
     // Создание новой сессии
     this.SignInGuestSession = () => {
       this.clearGuestSession();
       getGuestSession.getGuestSession().then((id) => {
-        console.log(id);
         this.setState({
           sessionId: id,
         });
@@ -93,47 +91,17 @@ export default class App extends Component {
       if (JSON.parse(localStorage.getItem('guestId'))) {
         getGuestSession
           .rateMovies(this.id, JSON.parse(localStorage.getItem('guestId')), stars)
-          .then((movie) => {
-            console.log(JSON.parse(localStorage.getItem('guestId')));
-            console.log(`getRate${movie}`);
-          }, 2)
           .then(() => this.ratedMovies());
       }
     };
-
-    // ================================== Фукнции для второго таба
-
-    this.putRateMoviesToTabTwo = async (stars, id) => {
-      await getGuestSession.rateMovies(this.id, JSON.parse(localStorage.getItem('guestId')), stars);
-      const result = await getGuestSession.getRateMoviesFromServer(JSON.parse(localStorage.getItem('guestId')));
-
-      let movie = result.filter((elem) => elem.id === id);
-      console.log(movie);
-      let value = movie[0].rating || 0;
-      this.setState({
-        hasRaited: true,
-      });
-      return value;
-    };
-
-    // ======================================
 
     // Забрать фильмы сессии
     this.ratedMovies = () => {
       if (localStorage.getItem('guestId')) {
         getGuestSession.getRateMoviesFromServer(JSON.parse(localStorage.getItem('guestId'))).then((movies) => {
-          console.log(movies);
-
           // установить фильмы с сервера в локал сторедж
           localStorage.setItem('movies', JSON.stringify(movies));
-
-          JSON.parse(localStorage.getItem('guestId')).length > 0
-            ? this.setState({
-                isMovie: true,
-              })
-            : this.setState({
-                isMovie: false,
-              });
+          this.setState({ isMovie: true });
         });
       }
     };
@@ -146,7 +114,7 @@ export default class App extends Component {
   }
 
   render() {
-    const { searchValue, currentPage, totalPages, sessionId, isMovie, hasRaited } = this.state;
+    const { searchValue, currentPage, totalPages, sessionId, isMovie, arrOfGenresFromServer } = this.state;
     return (
       <main className="wrapper">
         <div className="common-container">
@@ -155,19 +123,14 @@ export default class App extends Component {
               <TabPane tab="Search" key="1">
                 <div className="search-container">
                   <SearchPanel getSearchValue={this.getSearchValue} />
-                  {/* <button type="button" onClick={this.clearGuestSession}>
-                    Закончить сессию
-                  </button> */}
 
                   <button type="button" onClick={this.SignInGuestSession}>
                     Начать новую сессию
                   </button>
-                  {/* <button type="button">Оценить фильм</button> */}
                 </div>
                 <MovieList
-                  putRateMoviesToTabTwo={this.putRateMoviesToTabTwo}
+                  arrOfGenresFromServer={arrOfGenresFromServer}
                   ratedMovies={this.ratedMovies}
-                  sessionId={sessionId}
                   putRateMoviesToServ={this.putRateMoviesToServ}
                   putSearchValue={searchValue}
                   putCurrentPage={currentPage}
@@ -188,11 +151,8 @@ export default class App extends Component {
                     <div className="common-container">
                       <div className="movie-list">
                         <MovieFile
-                          sessionId={sessionId}
-                          isMovie={isMovie}
-                          hasRaited={hasRaited}
+                          arrOfGenresFromServer={arrOfGenresFromServer}
                           bodyMovie={JSON.parse(localStorage.getItem('movies'))}
-                          putRateMoviesToTabTwo={this.putRateMoviesToTabTwo}
                         />
                       </div>
                     </div>
@@ -215,22 +175,20 @@ export default class App extends Component {
   }
 }
 
-function MovieFile({ bodyMovie, isMovie, putRateMoviesToTabTwo, hasRaited, sessionId }) {
+function MovieFile({ bodyMovie, arrOfGenresFromServer }) {
   return (
     <>
       {bodyMovie.map((elem) => (
         <Movie
-          sessionId={sessionId}
-          hasRaited={hasRaited}
-          putRateMoviesToTabTwo={putRateMoviesToTabTwo}
+          arrOfGenresFromServer={arrOfGenresFromServer}
+          genresMovieId={elem.genre_ids}
           vote={elem.vote_average}
-          isMovie={isMovie}
-          key={elem.id}
+          id={elem.id}
           name={elem.original_title}
           date={elem.release_date}
           desc={elem.overview}
           img={elem.poster_path}
-          id={elem.id}
+          key={elem.id}
         />
       ))}
     </>

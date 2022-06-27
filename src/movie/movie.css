@@ -9,9 +9,9 @@
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.movie-card:hover {
+/* .movie-card:hover {
   cursor: pointer;
-}
+} */
 
 @media (max-width: 500px) {
   .movie-card {

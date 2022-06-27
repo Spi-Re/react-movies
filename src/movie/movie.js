@@ -1,16 +1,10 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable indent */
-/* eslint-disable prettier/prettier */
-/* eslint-disable no-nested-ternary */
-/* eslint-disable no-param-reassign */
 import { format } from 'date-fns';
 import './movie.css';
 import { Component } from 'react';
 
 import MovieService from '../services/MoviesService';
 
+import Genre from './genre';
 import StarsRate from './StarsRate';
 import Zaglushka from './zaglushka.jpg';
 
@@ -63,24 +57,37 @@ export default class Movie extends Component {
 
   render() {
     const { name, desc, img, date, id, vote, rating } = this.state;
-    const {
-      getMovieIdFromDOM,
-      putRateMoviesToServ,
-      sessionId,
-      ratedMovies,
-      isMovie,
-      putRateMoviesToTabTwo,
-      hasRaited,
-    } = this.props;
+    const { getMovieIdFromDOM, putRateMoviesToServ, ratedMovies, genresMovieId, arrOfGenresFromServer } = this.props;
+
+    const shortingTextSize = () => {
+      if (this.windowOuterWidth < 350) {
+        return this.shortingText(desc, 120);
+      }
+      if (this.windowOuterWidth < 720) {
+        return this.shortingText(desc, 165);
+      }
+      if (this.windowOuterWidth < 950) {
+        return desc;
+      }
+      if (this.windowOuterWidth > 950 && name.length > 30) {
+        return this.shortingText(desc, 120);
+      }
+      return this.shortingText(desc, 170);
+    };
+    let borderColor = null;
+
+    if (vote > 7) {
+      borderColor = '2px solid #66E900';
+    } else if (vote > 5) {
+      borderColor = '2px solid #E9D100';
+    } else if (vote > 3) {
+      borderColor = '2px solid #E97E00';
+    } else {
+      borderColor = '2px solid #E90000';
+    }
+
     const styleEllipse = {
-      border:
-        vote > 7
-          ? '2px solid #66E900'
-          : vote > 5
-          ? '2px solid #E9D100'
-          : vote > 3
-          ? '2px solid #E97E00'
-          : '2px solid #E90000',
+      border: borderColor,
     };
     return (
       <div className="movie-card">
@@ -94,32 +101,21 @@ export default class Movie extends Component {
           <h2 className="movie-name">{this.windowOuterWidth < 500 ? this.shortingText(name, 35) : name}</h2>
           <div className="movie-date">{(date && date.length) >= 5 ? format(new Date(date), 'PP') : 'Unknown'}</div>
           <div className="movie-all-class">
-            <div className="movie-class">Action</div>
-            <div className="movie-class">Drama</div>
+            {genresMovieId.map((elem) => (
+              <Genre key={elem} genreMovieId={elem} arrOfGenresFromServer={arrOfGenresFromServer} />
+            ))}
           </div>
           <div className="movie-stars-rate">
             <StarsRate
               updateStars={this.updateStars}
               rating={rating}
-              hasRaited={hasRaited}
-              putRateMoviesToTabTwo={putRateMoviesToTabTwo}
               putRateMoviesToServ={putRateMoviesToServ}
               id={id}
-              isMovie={isMovie}
               getMovieIdFromDOM={getMovieIdFromDOM}
-              sessionId={sessionId}
               ratedMovies={ratedMovies}
             />
           </div>
-          <p className="movie-desc">
-            {this.windowOuterWidth < 720
-              ? this.shortingText(desc, 165)
-              : this.windowOuterWidth < 950
-              ? desc
-              : this.windowOuterWidth > 950 && name.length > 30
-              ? this.shortingText(desc, 120)
-              : this.shortingText(desc, 170)}
-          </p>
+          <p className="movie-desc">{shortingTextSize()}</p>
         </div>
       </div>
     );

@@ -12,6 +12,7 @@ export default class MovieList extends Component {
 
   constructor() {
     super();
+
     this.state = {
       body: [],
       loading: true,
@@ -19,10 +20,21 @@ export default class MovieList extends Component {
       searchValue: '',
       currentPage: 1,
       totalPages: 50,
+      arrOfGenresFromServer: null,
+    };
+
+    // загрузка жанров
+    this.downloadArrOfJenresFromServer = () => {
+      this.service.getJenres().then((elem) => {
+        this.setState({
+          arrOfGenresFromServer: elem.genres,
+        });
+      });
     };
   }
 
   componentDidMount() {
+    this.downloadArrOfJenresFromServer();
     this.updateMovies();
   }
 
@@ -64,7 +76,10 @@ export default class MovieList extends Component {
   }
 
   render() {
-    const { getMovieIdFromDOM, putRateMoviesToServ, sessionId, ratedMovies, putRateMoviesToTabTwo } = this.props;
+    const { getMovieIdFromDOM, putRateMoviesToServ, ratedMovies } = this.props;
+
+    const { arrOfGenresFromServer } = this.state;
+
     const { body, loading, error } = this.state;
     const empty = body.length === 0 && !loading;
     const setData = !(error || loading || empty);
@@ -72,12 +87,11 @@ export default class MovieList extends Component {
     const emptyResult = empty ? <EmptyResult /> : null;
     const MovieComponent = setData ? (
       <MovieFile
+        arrOfGenresFromServer={arrOfGenresFromServer}
         ratedMovies={ratedMovies}
         bodyMovie={body}
-        sessionId={sessionId}
         getMovieIdFromDOM={getMovieIdFromDOM}
         putRateMoviesToServ={putRateMoviesToServ}
-        putRateMoviesToTabTwo={putRateMoviesToTabTwo}
       />
     ) : null;
     const SpinLoader = loading ? <Spin /> : null;
@@ -103,24 +117,17 @@ function EmptyResult() {
   return <>Поиск не дал результатов</>;
 }
 
-function MovieFile({
-  bodyMovie,
-  getMovieIdFromDOM,
-  putRateMoviesToServ,
-  ratedMovies,
-  putRateMoviesToTabTwo,
-  sessionId,
-}) {
+function MovieFile({ bodyMovie, getMovieIdFromDOM, putRateMoviesToServ, ratedMovies, arrOfGenresFromServer }) {
   return (
     <>
       {bodyMovie.map((elem) => (
         <Movie
-          sessionId={sessionId}
-          putRateMoviesToTabTwo={putRateMoviesToTabTwo}
-          vote={elem.vote_average}
+          arrOfGenresFromServer={arrOfGenresFromServer}
           ratedMovies={ratedMovies}
           putRateMoviesToServ={putRateMoviesToServ}
           getMovieIdFromDOM={getMovieIdFromDOM}
+          vote={elem.vote_average}
+          genresMovieId={elem.genre_ids}
           key={elem.id}
           id={elem.id}
           name={elem.original_title}

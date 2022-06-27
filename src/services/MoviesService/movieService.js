@@ -78,4 +78,11 @@ export default class MovieService {
       totalPages: res.total_pages,
     };
   }
+
+  async getJenres() {
+    const result = await this.getResource(
+      `https://api.themoviedb.org/3/genre/movie/list?api_key=${apiKey}&language=en-US`
+    );
+    return result;
+  }
 }
