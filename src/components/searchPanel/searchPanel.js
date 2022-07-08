@@ -8,23 +8,24 @@ export default class SearchPanel extends Component {
     this.state = {};
   }
 
-  render() {
+  updateStars = (e) => {
     const { getSearchValue } = this.props;
+    const debounceGetSearchValue = debounce(() => {
+      getSearchValue(e.target.value);
+    }, 800);
 
+    if (e.target.value.trim() !== '' && e.target.value.length > 0) {
+      debounceGetSearchValue();
+    }
+  };
+
+  render() {
     return (
       <input
         className="search-panel"
         type="text"
         placeholder="Type to search..."
-        onChange={(e) => {
-          const debounceGetSearchValue = debounce(() => {
-            getSearchValue(e.target.value);
-          }, 800);
-
-          if (e.target.value.trim() !== '' && e.target.value.length > 0) {
-            debounceGetSearchValue();
-          }
-        }}
+        onChange={(e) => this.updateStars(e)}
       />
     );
   }

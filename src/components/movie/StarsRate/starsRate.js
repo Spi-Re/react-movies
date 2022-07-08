@@ -12,8 +12,17 @@ export default class StarsRate extends Component {
     };
   }
 
+  handleUpdateStars = async (value) => {
+    const { updateStars, putRateMoviesToServ } = this.props;
+    await putRateMoviesToServ(value);
+    this.setState({
+      newValue: value,
+    });
+    updateStars();
+  };
+
   render() {
-    const { putRateMoviesToServ, id, getMovieIdFromDOM, rating, updateStars } = this.props;
+    const { id, getMovieIdFromDOM, rating } = this.props;
     const { newValue } = this.state;
     return (
       <Rate
@@ -22,13 +31,7 @@ export default class StarsRate extends Component {
         defaultValue={0}
         value={rating || newValue}
         className="rate"
-        onChange={async (value) => {
-          await putRateMoviesToServ(value);
-          this.setState({
-            newValue: value,
-          });
-          updateStars();
-        }}
+        onChange={(value) => this.handleUpdateStars(value)}
         onFocus={() => getMovieIdFromDOM(id)}
       />
     );

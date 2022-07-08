@@ -79,7 +79,7 @@ export default class Movie extends Component {
       if (this.windowOuterWidth > 950 && name.length > 30) {
         return this.shortingText(desc, 120);
       }
-      return this.shortingText(desc, 170);
+      return this.shortingText(desc, 150);
     };
     let borderColor = null;
 
@@ -102,7 +102,7 @@ export default class Movie extends Component {
           <img className="movie-poster" src={img ? `https://image.tmdb.org/t/p/w500${img}` : Zaglushka} alt="Poster" />
         </div>
         <div className="number-rate" style={styleEllipse}>
-          {String(vote).length === 1 ? `${vote}.0` : vote}
+          {String(vote).length === 1 ? `${vote}.0` : vote.toFixed(1)}
         </div>
         <div className="movie-right">
           <h2 className="movie-name">{this.windowOuterWidth < 500 ? this.shortingText(name, 35) : name}</h2>

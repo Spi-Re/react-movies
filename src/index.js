@@ -1,9 +1,9 @@
 import ReactDOM from 'react-dom';
 
-import MovieService from './services/MoviesService';
-import './app/app.css';
-import App from './app';
-import GenresContext from './genresContext';
+import MovieService from './components/services/MoviesService';
+import './components/app/app.css';
+import App from './components/app';
+import GenresContext from './components/genresContext';
 
 const service = new MovieService();
 
